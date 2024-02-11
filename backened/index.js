@@ -16,5 +16,5 @@ app.use('/api/auth',router)
 app.use('/api/note',noterouter)
 
 app.listen(port,()=>{
-    console.log(`example app listening on localhost:${port}`)
+    console.log(`backened app listening on localhost:${port}`)
 })
