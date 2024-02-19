@@ -4,8 +4,10 @@ import { user } from "./Models/User.js";
 import { note } from "./Models/Notes.js";
 import router from "./Routes/auth.js";
 import noterouter from "./Routes/notes.js";
+import cors from "cors"
 
 const app=express()
+app.use(cors())
 const port=5000
 const url="mongodb://localhost:27017"
 let connection=await mongoose.connect(url)

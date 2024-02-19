@@ -13,9 +13,9 @@ const JWT_SECRET='!mr@n'
 
 router.post("/createuser",
 [
-  check('password',"enter a valid password").isLength({ min: 3 }),
-  check('email',"enter a valid email").isEmail(),
-  check('name',"enter a valid name").isLength({min:4})
+    check('password',"enter a valid password").isLength({ min: 3 }),
+    check('email',"enter a valid email").isEmail(),
+    check('name',"enter a valid name").isLength({min:4})
 ], async (req,res)=>{
     // check only validation errors provided by the user to save the data
     const error=validationResult(req)
@@ -31,10 +31,10 @@ router.post("/createuser",
         } 
         const salt= await bcrypt.genSalt(10)
         const secPass=await bcrypt.hash(req.body.password,salt)
-
+        
         // create the schema of user data and stores
-
-          User=await user.create({
+        
+        User=await user.create({
             name:req.body.name,
             email:req.body.email,
             password:secPass
@@ -45,20 +45,21 @@ router.post("/createuser",
             }
         }
         const authentoken=jwt.sign(data,JWT_SECRET)
-        res.send({authentoken})
+        res.json({success:"true",authentoken})
     } catch (error) {
-    console.error(error.message)
-    res.status(400).send("internal server error")
-}
+        console.error(error.message)
+        res.status(400).send("internal server error")
+    }
 })
 
 // Route-2  login using that authentication 
 
 router.post("/login",
 [
-  check('email',"enter a valid email").isEmail(),
-  check('password',"enter a valid password").exists()
+    check('email',"enter a valid email").isEmail(),
+    check('password',"enter a valid password").exists()
 ], async (req,res)=>{
+    // let success=false
     const error=validationResult(req)
     if(!error.isEmpty()){
         return res.status(400).json({error:error.array()})
@@ -68,20 +69,19 @@ router.post("/login",
     try {
         let User=await user.findOne({email})
         if(!User){
-           return res.status(400).json({error:"please enter valid credentials"})
+           return res.status(400).json({success:"false", error:"please enter valid credentials"})
         }
         let passwordcheck=await bcrypt.compare(password,User.password)
         if(!passwordcheck){
-            return res.status(400).json({error:"please enter valid credentials"})
+            return res.status(400).json({success:"false", error:"please enter valid credentials"})
         }
         const data={
             user:{
                 id:User.id
             }
         }
-        
         const authentoken=jwt.sign(data,JWT_SECRET)
-        res.send({authentoken})
+        res.json({success:"true" , authentoken})
     } catch (error) {
         console.log(error.message)
         res.status(500).send("internal server error")
